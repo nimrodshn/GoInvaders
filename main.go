@@ -10,17 +10,22 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-const WINDOW_WIDTH = 1024
-const WINDOW_HEIGHT = 768
+// The Height & Width of the game window
+const (
+	WindowWidth  = 1024
+	WindowHeight = 768
+)
 
 func main() {
 	pixelgl.Run(run)
 }
 
 func run() {
+	initLocation := pixel.V(float64(WindowWidth/2), float64(WindowHeight/10))
+
 	cfg := pixelgl.WindowConfig{
 		Title:  "Pixel Rocks!",
-		Bounds: pixel.R(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT),
+		Bounds: pixel.R(0, 0, WindowWidth, WindowHeight),
 		VSync:  true,
 	}
 
@@ -37,10 +42,15 @@ func run() {
 
 	sprite := pixel.NewSprite(pic, pic.Bounds())
 
+	// Set Background Color.
 	win.Clear(colornames.Black)
-	sprite.Draw(win, pixel.IM.Moved(pixel.Vec{X: float64(WINDOW_WIDTH / 2), Y: float64(WINDOW_HEIGHT / 10)}))
 
+	// Main game loop
 	for !win.Closed() {
+		mat := pixel.IM
+		mat = mat.Moved(initLocation)
+		sprite.Draw(win, mat)
+
 		win.Update()
 	}
 }
