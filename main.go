@@ -45,12 +45,12 @@ func run() {
 	// Set Background Color.
 	win.Clear(colornames.Black)
 
+	mat := pixel.IM
+	mat = mat.Moved(initLocation)
+	sprite.Draw(win, mat)
+
 	// Main game loop
 	for !win.Closed() {
-		mat := pixel.IM
-		mat = mat.Moved(initLocation)
-		sprite.Draw(win, mat)
-
 		win.Update()
 	}
 }
