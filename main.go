@@ -8,17 +8,29 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-// The Height & Width of the game window
-const ()
-
 func main() {
 	pixelgl.Run(run)
 }
 
 func run() {
+	player, gameWindow, err := initializeGame()
 
+	if err != nil {
+		panic(err)
+	}
+
+	// Main game loop
+	for !gameWindow.Closed() {
+		player.ListenAndMoveOnKeyStroke(gameWindow)
+		// After updating the new location we need to rerender to screen
+		player.DrawOnScreen(gameWindow)
+		gameWindow.Update()
+	}
+}
+
+func initializeGame() (*spaceship.Spaceship, *pixelgl.Window, error) {
 	cfg := pixelgl.WindowConfig{
-		Title:  "Pixel Rocks!",
+		Title:  "GoInvaders",
 		Bounds: pixel.R(0, 0, utils.WindowWidth, utils.WindowHeight),
 		VSync:  true,
 	}
@@ -32,15 +44,8 @@ func run() {
 	win.Clear(colornames.Black)
 
 	// Create and draw the main player in the game window.
-	player, err := spaceship.NewMainPlayer(win)
+	player, err := spaceship.NewMainPlayer()
+	player.DrawOnScreen(win)
 
-	if err != nil {
-		panic(err)
-	}
-
-	// Main game loop
-	for !win.Closed() {
-		player.ListenAndMoveOnKeyStroke(win)
-		win.Update()
-	}
+	return player, win, err
 }

@@ -1,8 +1,6 @@
 package spaceship
 
 import (
-	"fmt"
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/nimrodshn/GoInvaders/utils"
@@ -20,7 +18,7 @@ type Spaceship struct {
 }
 
 // NewMainPlayer Creates a new main player for the game and draws it on a given window.
-func NewMainPlayer(win *pixelgl.Window) (*Spaceship, error) {
+func NewMainPlayer() (*Spaceship, error) {
 	// Initial player location
 	initLocation := pixel.V(float64(utils.WindowWidth/2), float64(utils.WindowHeight/10))
 
@@ -37,35 +35,38 @@ func NewMainPlayer(win *pixelgl.Window) (*Spaceship, error) {
 	player := new(Spaceship)
 	player.mat = mat
 	player.sprite = sprite
-	sprite.Draw(win, mat)
 
 	return player, nil
 }
 
-// ListenAndMoveOnKeyStroke Moves player on key strokes and draw new location on screen
+// DrawOnScreen draws the spaceship on screen win.
+func (player *Spaceship) DrawOnScreen(win *pixelgl.Window) {
+	// Set Background Color.
+	win.Clear(colornames.Black)
+	player.sprite.Draw(win, player.mat)
+}
+
+// ListenAndMoveOnKeyStroke Moves player on key strokes
 func (player *Spaceship) ListenAndMoveOnKeyStroke(win *pixelgl.Window) {
-	fmt.Println(player.mat)
-	if inBounds(player) {
-		if win.Pressed(pixelgl.KeyLeft) {
-			player.mat = player.mat.Moved(pixel.V(-stepSize, 0))
-		}
-		if win.Pressed(pixelgl.KeyRight) {
-			player.mat = player.mat.Moved(pixel.V(stepSize, 0))
-		}
-		if win.Pressed(pixelgl.KeyDown) {
-			player.mat = player.mat.Moved(pixel.V(0, -stepSize))
-		}
-		if win.Pressed(pixelgl.KeyUp) {
-			player.mat = player.mat.Moved(pixel.V(0, stepSize))
-		}
-		win.Clear(colornames.Black)
-		player.sprite.Draw(win, player.mat)
+	var newLocation pixel.Matrix
+	switch {
+	case win.Pressed(pixelgl.KeyLeft):
+		newLocation = player.mat.Moved(pixel.V(-stepSize, 0))
+	case win.Pressed(pixelgl.KeyRight):
+		newLocation = player.mat.Moved(pixel.V(stepSize, 0))
+	case win.Pressed(pixelgl.KeyDown):
+		newLocation = player.mat.Moved(pixel.V(0, -stepSize))
+	case win.Pressed(pixelgl.KeyUp):
+		newLocation = player.mat.Moved(pixel.V(0, stepSize))
+	}
+	if inBounds(newLocation) {
+		player.mat = newLocation
 	}
 }
 
-func inBounds(spaceship *Spaceship) bool {
-	if (spaceship.mat[4] < utils.WindowWidth && spaceship.mat[4] > 0) &&
-		(spaceship.mat[5] < utils.WindowHeight && spaceship.mat[5] > 0) {
+func inBounds(mat pixel.Matrix) bool {
+	if (mat[4] < utils.WindowWidth && mat[4] > 0) &&
+		(mat[5] < utils.WindowHeight && mat[5] > 0) {
 		return true
 	}
 	return false
