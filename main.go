@@ -20,7 +20,7 @@ func run() {
 	}
 
 	// Main game loop
-	for !gameWindow.Closed() {
+	for !gameFinished(gameWindow) {
 		player.ListenAndMoveOnKeyStroke(gameWindow)
 		// After updating the new location we need to rerender to screen
 		player.DrawOnScreen(gameWindow)
@@ -48,4 +48,11 @@ func initializeGame() (*spaceship.Spaceship, *pixelgl.Window, error) {
 	player.DrawOnScreen(win)
 
 	return player, win, err
+}
+
+func gameFinished(gameWindow *pixelgl.Window) bool {
+	if gameWindow.Closed() {
+		return true
+	}
+	return false
 }
