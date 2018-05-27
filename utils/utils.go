@@ -1,15 +1,20 @@
 package utils
 
 import (
-  "os"
-  "github.com/faiface/pixel"
-  _ "image/png"
-  "image"
+	"image"
+	_ "image/png"
+	"os"
+
+	"github.com/faiface/pixel"
 )
 
 const (
-  WindowWidth  = 1024
-  WindowHeight = 768
+	// WindowWidth is the game windoe width
+	WindowWidth = 1024
+	// WindowHeight is the game window height
+	WindowHeight = 768
+	// StepSize is the speed of the moving spaceship / it's shot
+	StepSize = 10
 )
 
 // LoadSprite loads the image in path and returns a sprite with that image borders.

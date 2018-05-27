@@ -1,11 +1,9 @@
 package main
 
 import (
-	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/nimrodshn/GoInvaders/spaceship"
-	"github.com/nimrodshn/GoInvaders/utils"
-	"golang.org/x/image/colornames"
+	"github.com/nimrodshn/GoInvaders/userinterface"
+	"time"
 )
 
 func main() {
@@ -13,46 +11,35 @@ func main() {
 }
 
 func run() {
-	player, gameWindow, err := initializeGame()
+	ui, err := initializeGame()
+	ticker := time.NewTicker(250 * time.Millisecond)
 
 	if err != nil {
 		panic(err)
 	}
 
 	// Main game loop
-	for !gameFinished(gameWindow) {
-		player.ListenAndMoveOnKeyStroke(gameWindow)
-		// After updating the new location we need to rerender to screen
-		player.DrawOnScreen(gameWindow)
-		gameWindow.Update()
+	for {
+		select {
+		case <-ticker.C:
+			ui.ListenOnKeyStroke()
+			ui.DrawGameOnScreen()
+		default:
+			if gameFinished(ui) {
+				break
+			}
+		}
 	}
 }
 
-func initializeGame() (*spaceship.Spaceship, *pixelgl.Window, error) {
-	cfg := pixelgl.WindowConfig{
-		Title:  "GoInvaders",
-		Bounds: pixel.R(0, 0, utils.WindowWidth, utils.WindowHeight),
-		VSync:  true,
-	}
-
-	win, err := pixelgl.NewWindow(cfg)
+func initializeGame() (userinterface.UserInterface, error) {
+	ui, err := userinterface.NewUserInterface()
 	if err != nil {
 		panic(err)
 	}
-
-	// Set Background Color.
-	win.Clear(colornames.Black)
-
-	// Create and draw the main player in the game window.
-	player, err := spaceship.NewMainPlayer()
-	player.DrawOnScreen(win)
-
-	return player, win, err
+	return ui, err
 }
 
-func gameFinished(gameWindow *pixelgl.Window) bool {
-	if gameWindow.Closed() {
-		return true
-	}
-	return false
+func gameFinished(ui userinterface.UserInterface) bool {
+	return ui.WindowClosed()
 }

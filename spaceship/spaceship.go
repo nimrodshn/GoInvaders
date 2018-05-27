@@ -3,12 +3,8 @@ package spaceship
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/nimrodshn/GoInvaders/shot"
 	"github.com/nimrodshn/GoInvaders/utils"
-	"golang.org/x/image/colornames"
-)
-
-const (
-	stepSize = 10
 )
 
 // Spaceship struct is a common struct for both player and enemy
@@ -39,35 +35,25 @@ func NewMainPlayer() (*Spaceship, error) {
 	return player, nil
 }
 
-// DrawOnScreen draws the spaceship on screen win.
-func (player *Spaceship) DrawOnScreen(win *pixelgl.Window) {
-	// Set Background Color.
-	win.Clear(colornames.Black)
-	player.sprite.Draw(win, player.mat)
-}
-
-// ListenAndMoveOnKeyStroke Moves player on key strokes
-func (player *Spaceship) ListenAndMoveOnKeyStroke(win *pixelgl.Window) {
-	var newLocation pixel.Matrix
-	switch {
-	case win.Pressed(pixelgl.KeyLeft):
-		newLocation = player.mat.Moved(pixel.V(-stepSize, 0))
-	case win.Pressed(pixelgl.KeyRight):
-		newLocation = player.mat.Moved(pixel.V(stepSize, 0))
-	case win.Pressed(pixelgl.KeyDown):
-		newLocation = player.mat.Moved(pixel.V(0, -stepSize))
-	case win.Pressed(pixelgl.KeyUp):
-		newLocation = player.mat.Moved(pixel.V(0, stepSize))
-	}
-	if inBounds(newLocation) {
-		player.mat = newLocation
+func (player *Spaceship) shoot(win *pixelgl.Window) {
+	_, err := shot.NewShot(pixel.V(player.mat[4], player.mat[5]))
+	if err != nil {
+		return
 	}
 }
 
-func inBounds(mat pixel.Matrix) bool {
-	if (mat[4] < utils.WindowWidth && mat[4] > 0) &&
-		(mat[5] < utils.WindowHeight && mat[5] > 0) {
-		return true
-	}
-	return false
+func (player *Spaceship) SetMatrix(matrix pixel.Matrix) {
+	player.mat = matrix
+}
+
+// GetObjectMatrix Return the object matrix containing information needed
+// in order to render spaceship.
+func (player Spaceship) GetObjectMatrix() pixel.Matrix {
+	return player.mat
+}
+
+// GetObjectSprite Return the object matrix containing information needed
+// in order to render spaceship.
+func (player Spaceship) GetObjectSprite() pixel.Sprite {
+	return *player.sprite
 }
