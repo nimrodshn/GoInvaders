@@ -11,6 +11,7 @@ import (
 
 // UserInterface represents the Interface which takes input from user
 // and displays output accordingly.
+// UserInterface also updates the game state according to the input.
 type UserInterface struct {
 	state  *gamestate.GameState
 	window *pixelgl.Window
@@ -40,12 +41,12 @@ func (ui *UserInterface) DrawGameOnScreen() {
 	ui.window.Clear(colornames.Black)
 	gameObjects := ui.state.GetGameObjects()
 	for _, obj := range gameObjects {
-		drawOnScreen(obj, ui.window)
+		drawObjectOnScreen(obj, ui.window)
 	}
 	ui.window.Update()
 }
 
-func drawOnScreen(object gameobject.GameObject, window *pixelgl.Window) {
+func drawObjectOnScreen(object gameobject.GameObject, window *pixelgl.Window) {
 	sprite := object.GetObjectSprite()
 	mat := object.GetObjectMatrix()
 	sprite.Draw(window, mat)

@@ -13,7 +13,7 @@ const (
 	WindowWidth = 1024
 	// WindowHeight is the game window height
 	WindowHeight = 768
-	// StepSize is the speed of the moving spaceship / it's shot
+	// StepSize is the speed of the moving spaceship / it's bullete
 	StepSize = 10
 )
 

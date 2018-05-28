@@ -6,29 +6,24 @@ import (
 	"time"
 )
 
+ var ticker = time.NewTicker(25 * time.Millisecond)
+
 func main() {
 	pixelgl.Run(run)
 }
 
 func run() {
 	ui, err := initializeGame()
-	ticker := time.NewTicker(250 * time.Millisecond)
 
 	if err != nil {
 		panic(err)
 	}
 
 	// Main game loop
-	for {
-		select {
-		case <-ticker.C:
-			ui.ListenOnKeyStroke()
-			ui.DrawGameOnScreen()
-		default:
-			if gameFinished(ui) {
-				break
-			}
-		}
+	for !gameFinished(ui) {
+		<-ticker.C
+		ui.ListenOnKeyStroke()
+		ui.DrawGameOnScreen()
 	}
 }
 

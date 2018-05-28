@@ -2,7 +2,7 @@ package gamestate
 
 import (
 	"github.com/nimrodshn/GoInvaders/gameobject"
-	"github.com/nimrodshn/GoInvaders/shot"
+	"github.com/nimrodshn/GoInvaders/bullete"
 	"github.com/nimrodshn/GoInvaders/spaceship"
 	"github.com/faiface/pixel"
 )
@@ -11,7 +11,7 @@ import (
 type GameState struct {
 	mainPlayer *spaceship.Spaceship
 	enemies    []*spaceship.Spaceship
-	shots      []*shot.Shot
+	bullets    []*bullete.Bullete
 }
 
 // NewGameState Creates  a new GameState for game initialization
@@ -29,8 +29,8 @@ func (state *GameState) GetGameObjects() []gameobject.GameObject {
 	for _,enemy := range state.enemies {
 		objects = append(objects,enemy)
 	}
-	for _,shot := range state.shots {
-		objects = append(objects, shot)
+	for _,bullet := range state.bullets {
+		objects = append(objects, bullet)
 	}
 	objects = append(objects, state.mainPlayer)
 	return objects

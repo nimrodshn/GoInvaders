@@ -3,7 +3,7 @@ package spaceship
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/nimrodshn/GoInvaders/shot"
+	"github.com/nimrodshn/GoInvaders/bullete"
 	"github.com/nimrodshn/GoInvaders/utils"
 )
 
@@ -36,7 +36,7 @@ func NewMainPlayer() (*Spaceship, error) {
 }
 
 func (player *Spaceship) shoot(win *pixelgl.Window) {
-	_, err := shot.NewShot(pixel.V(player.mat[4], player.mat[5]))
+	_, err := bullete.NewBullete(pixel.V(player.mat[4], player.mat[5]))
 	if err != nil {
 		return
 	}
