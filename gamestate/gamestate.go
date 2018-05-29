@@ -53,24 +53,25 @@ func (state *GameState) GetGameObjects() []gameobject.GameObject {
 // ChangeState changes the player state according to the input given by ui.
 func (state *GameState) ChangeState(indicator int) {
 	var newLocation pixel.Matrix
-	currentLocation := state.mainPlayer.GetObjectMatrix()
+	playerMat := state.mainPlayer.GetObjectMatrix()
 	switch indicator {
 	case PlayerMovedLeft:
-		newLocation = currentLocation.Moved(pixel.V(-utils.StepSize, 0))
+		newLocation = playerMat.Moved(pixel.V(-utils.StepSize, 0))
 	case PlayerMovedRight:
-		newLocation = currentLocation.Moved(pixel.V(utils.StepSize, 0))
+		newLocation = playerMat.Moved(pixel.V(utils.StepSize, 0))
 	case PlayerMovedDown:
-		newLocation = currentLocation.Moved(pixel.V(0, -utils.StepSize))
+		newLocation = playerMat.Moved(pixel.V(0, -utils.StepSize))
 	case PlayerMovedUp:
-		newLocation = currentLocation.Moved(pixel.V(0, utils.StepSize))
+		newLocation = playerMat.Moved(pixel.V(0, utils.StepSize))
 	case PlayerShotBullet:
-		// Start shooting...
-	default:
-		newLocation = currentLocation
+		playerVec := pixel.V(playerMat[4],playerMat[5])
+		b, _ := bullete.NewBullete(playerVec)
+		state.bullets = append(state.bullets, b)
 	}
-	if newLocation != currentLocation && inBounds(newLocation) {
+	if newLocation != playerMat && inBounds(newLocation) {
 		state.mainPlayer.SetMatrix(newLocation)
 	}
+	state.updateBulletesLocation()
 }
 
 func inBounds(mat pixel.Matrix) bool {
@@ -79,4 +80,11 @@ func inBounds(mat pixel.Matrix) bool {
 		return true
 	}
 	return false
+}
+
+func (state *GameState) updateBulletesLocation() {
+	for _, b := range state.bullets {
+		bulleteMat := b.GetObjectMatrix()
+		b.SetMatrix(bulleteMat.Moved(pixel.V(0, utils.StepSize)))
+	}
 }
