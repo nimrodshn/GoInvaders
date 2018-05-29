@@ -83,8 +83,14 @@ func inBounds(mat pixel.Matrix) bool {
 }
 
 func (state *GameState) updateBulletesLocation() {
-	for _, b := range state.bullets {
+	for i, b := range state.bullets {
 		bulleteMat := b.GetObjectMatrix()
-		b.SetMatrix(bulleteMat.Moved(pixel.V(0, utils.StepSize)))
+		newLocation := bulleteMat.Moved(pixel.V(0, utils.StepSize))
+		if inBounds(newLocation) {
+			b.SetMatrix(newLocation)
+		} else {
+			state.bullets[i] = state.bullets[len(state.bullets)-1]
+			state.bullets = state.bullets[:len(state.bullets)-1]
+		}
 	}
 }
