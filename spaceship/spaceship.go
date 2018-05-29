@@ -42,6 +42,7 @@ func (player *Spaceship) shoot(win *pixelgl.Window) {
 	}
 }
 
+// SetMatrix allows to set spaceship matrix.
 func (player *Spaceship) SetMatrix(matrix pixel.Matrix) {
 	player.mat = matrix
 }

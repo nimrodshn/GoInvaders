@@ -52,35 +52,25 @@ func drawObjectOnScreen(object gameobject.GameObject, window *pixelgl.Window) {
 	sprite.Draw(window, mat)
 }
 
-// ListenAndMoveOnKeyStroke Moves player on key strokes
+// ListenOnKeyStroke Moves player on key strokes
 func (ui UserInterface) ListenOnKeyStroke() {
-	var newLocation pixel.Matrix
-	currentLocation := ui.state.GetMainPlayer().GetObjectMatrix()
+	var userInput int
 	switch {
 	case ui.window.Pressed(pixelgl.KeyLeft):
-		newLocation = currentLocation.Moved(pixel.V(-utils.StepSize, 0))
+		userInput = gamestate.PlayerMovedLeft
 	case ui.window.Pressed(pixelgl.KeyRight):
-		newLocation = currentLocation.Moved(pixel.V(utils.StepSize, 0))
+		userInput = gamestate.PlayerMovedRight
 	case ui.window.Pressed(pixelgl.KeyDown):
-		newLocation = currentLocation.Moved(pixel.V(0, -utils.StepSize))
+		userInput = gamestate.PlayerMovedDown
 	case ui.window.Pressed(pixelgl.KeyUp):
-		newLocation = currentLocation.Moved(pixel.V(0, utils.StepSize))
+		userInput = gamestate.PlayerMovedUp
 	case ui.window.Pressed(pixelgl.KeySpace):
-		newLocation = currentLocation
+		userInput = gamestate.PlayerShotBullet
 	}
-	if currentLocation != newLocation && inBounds(newLocation) {
-		ui.state.ChangePlayerState(newLocation)
-	}
+	ui.state.ChangeState(userInput)
 }
 
-func inBounds(mat pixel.Matrix) bool {
-	if (mat[4] < utils.WindowWidth && mat[4] > 0) &&
-		(mat[5] < utils.WindowHeight && mat[5] > 0) {
-		return true
-	}
-	return false
-}
-
+// WindowClosed Check if window is closed
 func (ui UserInterface) WindowClosed() bool {
 	if ui.window.Closed() {
 		return true

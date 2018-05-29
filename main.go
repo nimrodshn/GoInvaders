@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
- var ticker = time.NewTicker(25 * time.Millisecond)
+var ticker = time.NewTicker(25 * time.Millisecond)
 
 func main() {
 	pixelgl.Run(run)
