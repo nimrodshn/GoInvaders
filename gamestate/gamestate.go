@@ -1,18 +1,20 @@
 package gamestate
 
 import (
-	"github.com/nimrodshn/GoInvaders/utils"
-	"github.com/nimrodshn/GoInvaders/gameobject"
-	"github.com/nimrodshn/GoInvaders/bullete"
-	"github.com/nimrodshn/GoInvaders/spaceship"
 	"github.com/faiface/pixel"
+	"github.com/nimrodshn/GoInvaders/bullete"
+	"github.com/nimrodshn/GoInvaders/gameobject"
+	"github.com/nimrodshn/GoInvaders/spaceship"
+	"github.com/nimrodshn/GoInvaders/utils"
+	"time"
 )
 
 // GameState holds the current game state
 type GameState struct {
-	mainPlayer *spaceship.Spaceship
-	enemies    []*spaceship.Spaceship
-	bullets    []*bullete.Bullete
+	mainPlayer   *spaceship.Spaceship
+	enemies      []*spaceship.Spaceship
+	bullets      []*bullete.Bullete
+	lastTimeShot time.Time
 }
 
 const (
@@ -26,6 +28,8 @@ const (
 	PlayerMovedDown = 4
 	// PlayerShotBullet constant indicating the player shot a bullet
 	PlayerShotBullet = 5
+	// Interval from last shot, this is to prevent shoting storms.
+	shotInterval = time.Duration(200 * time.Millisecond)
 )
 
 // NewGameState Creates  a new GameState for game initialization
@@ -33,17 +37,18 @@ func NewGameState() (state *GameState, err error) {
 	state = new(GameState)
 	player, err := spaceship.NewMainPlayer()
 	state.mainPlayer = player
+	state.lastTimeShot = time.Now()
 	return state, err
 }
 
 // GetGameObjects returns a snapshot of the current entities in the game.
 func (state *GameState) GetGameObjects() []gameobject.GameObject {
-	objects := make([]gameobject.GameObject,0)
+	objects := make([]gameobject.GameObject, 0)
 	// cannot append []T to and interface (see https://golang.org/doc/faq#convert_slice_of_interface).
-	for _,enemy := range state.enemies {
-		objects = append(objects,enemy)
+	for _, enemy := range state.enemies {
+		objects = append(objects, enemy)
 	}
-	for _,bullet := range state.bullets {
+	for _, bullet := range state.bullets {
 		objects = append(objects, bullet)
 	}
 	objects = append(objects, state.mainPlayer)
@@ -64,9 +69,12 @@ func (state *GameState) ChangeState(indicator int) {
 	case PlayerMovedUp:
 		newLocation = playerMat.Moved(pixel.V(0, utils.StepSize))
 	case PlayerShotBullet:
-		playerVec := pixel.V(playerMat[4],playerMat[5])
-		b, _ := bullete.NewBullete(playerVec)
-		state.bullets = append(state.bullets, b)
+		if time.Since(state.lastTimeShot) >= shotInterval {
+			playerVec := pixel.V(playerMat[4], playerMat[5])
+			b, _ := bullete.NewBullete(playerVec)
+			state.bullets = append(state.bullets, b)
+			state.lastTimeShot = time.Now()
+		}
 	}
 	if newLocation != playerMat && inBounds(newLocation) {
 		state.mainPlayer.SetMatrix(newLocation)

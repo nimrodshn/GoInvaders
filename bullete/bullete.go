@@ -42,7 +42,6 @@ func (b *Bullete) GetObjectSprite() pixel.Sprite {
 	return *b.sprite
 }
 
-
 // SetMatrix allows to set bullete matrix.
 func (b *Bullete) SetMatrix(matrix pixel.Matrix) {
 	b.mat = matrix
