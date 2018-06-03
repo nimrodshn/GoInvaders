@@ -17,6 +17,7 @@ type UserInterface struct {
 	window *pixelgl.Window
 }
 
+// NewUserInterface creates a user interface object
 func NewUserInterface() (UserInterface, error) {
 	cfg := pixelgl.WindowConfig{
 		Title:  "GoInvaders",
@@ -26,6 +27,7 @@ func NewUserInterface() (UserInterface, error) {
 
 	win, err := pixelgl.NewWindow(cfg)
 	state, err := gamestate.NewGameState()
+
 	if err != nil {
 		panic(err)
 	}

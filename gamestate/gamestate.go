@@ -11,10 +11,12 @@ import (
 
 // GameState holds the current game state
 type GameState struct {
-	mainPlayer   *spaceship.Spaceship
-	enemies      []*spaceship.Spaceship
-	bullets      []*bullete.Bullete
-	lastTimeShot time.Time
+	mainPlayer       *spaceship.Spaceship
+	enemies          []*spaceship.Spaceship
+	bullets          []*bullete.Bullete
+	lastTimeShot     time.Time
+	timeForNextLevel time.Duration
+	level            int
 }
 
 const (
@@ -30,6 +32,8 @@ const (
 	PlayerShotBullet = 5
 	// Interval from last shot, this is to prevent shoting storms.
 	shotInterval = time.Duration(200 * time.Millisecond)
+	// the amount of initial game enemies
+	enemyCount = 5
 )
 
 // NewGameState Creates  a new GameState for game initialization
@@ -38,6 +42,9 @@ func NewGameState() (state *GameState, err error) {
 	player, err := spaceship.NewMainPlayer()
 	state.mainPlayer = player
 	state.lastTimeShot = time.Now()
+	state.timeForNextLevel = 1 * time.Minute
+	state.level = 1
+	state.enemies = initializeEnemiesForLevel(state.level)
 	return state, err
 }
 
@@ -55,8 +62,14 @@ func (state *GameState) GetGameObjects() []gameobject.GameObject {
 	return objects
 }
 
-// ChangeState changes the player state according to the input given by ui.
+// ChangeState changes the game state according to the input given by ui.
 func (state *GameState) ChangeState(indicator int) {
+	state.processInput(indicator)
+	state.updateBulletesLocation()
+	state.ComputeLogic()
+}
+
+func (state *GameState) processInput(indicator int) {
 	var newLocation pixel.Matrix
 	playerMat := state.mainPlayer.GetObjectMatrix()
 	switch indicator {
@@ -79,15 +92,6 @@ func (state *GameState) ChangeState(indicator int) {
 	if newLocation != playerMat && inBounds(newLocation) {
 		state.mainPlayer.SetMatrix(newLocation)
 	}
-	state.updateBulletesLocation()
-}
-
-func inBounds(mat pixel.Matrix) bool {
-	if (mat[4] < utils.WindowWidth && mat[4] > 0) &&
-		(mat[5] < utils.WindowHeight && mat[5] > 0) {
-		return true
-	}
-	return false
 }
 
 func (state *GameState) updateBulletesLocation() {
@@ -99,6 +103,82 @@ func (state *GameState) updateBulletesLocation() {
 		} else {
 			state.bullets[i] = state.bullets[len(state.bullets)-1]
 			state.bullets = state.bullets[:len(state.bullets)-1]
+		}
+	}
+}
+
+func inBounds(mat pixel.Matrix) bool {
+	if (mat[4] < utils.WindowWidth && mat[4] > 0) &&
+		(mat[5] < utils.WindowHeight && mat[5] > 0) {
+		return true
+	}
+	return false
+}
+
+func initializeEnemiesForLevel(level int) []*spaceship.Spaceship {
+	count := level * enemyCount
+	idx := 0
+	enemyArr := make([]*spaceship.Spaceship, count)
+	for i := 0; i < 2*count; i++ {
+		if i%2 != 0 {
+			e, _ := spaceship.NewEnemy()
+			mat := e.GetObjectMatrix()
+			x := float64(i) / float64(2*count)
+			e.SetMatrix(mat.Moved(pixel.V(x*utils.WindowWidth, utils.WindowHeight*0.8)))
+			enemyArr[idx] = e
+			idx++
+		}
+	}
+	return enemyArr
+}
+
+// GetBulletes Returns game bullets
+func (state *GameState) GetBulletes() []*bullete.Bullete {
+	return state.bullets
+}
+
+// SetBulletes sets game bullets
+func (state *GameState) SetBulletes(bulletes []*bullete.Bullete) {
+	state.bullets = bulletes
+}
+
+// GetMainPlayer returns the main player.
+func (state *GameState) GetMainPlayer() *spaceship.Spaceship {
+	return state.mainPlayer
+}
+
+// GetEnemies returns the current enemies.
+func (state *GameState) GetEnemies() []*spaceship.Spaceship {
+	return state.enemies
+}
+
+// SetEnemies returns the current enemies.
+func (state *GameState) SetEnemies(enemies []*spaceship.Spaceship) {
+	state.enemies = enemies
+}
+
+// ComputeLogic computes the game logic as a lambda and changes the state in place.
+func (state *GameState) ComputeLogic() {
+	for j, b := range state.bullets {
+		for i, e := range state.enemies {
+			rect := e.GetObjectSprite().Frame()
+			eMat := e.GetObjectMatrix()
+			eX := eMat[4]
+			eY := eMat[5]
+			bMat := b.GetObjectMatrix()
+			bX := bMat[4]
+			bY := bMat[5]
+			// If shot is contained within the borders of the enemy sprite.
+			if bX >= (eX-rect.Max.X/2) && bX <= (eX+rect.Max.X/2) &&
+				bY >= (eY-rect.Max.Y/2) && bY <= (eY+rect.Max.Y/2) {
+				// Update bulletes
+				state.bullets[j] = state.bullets[len(state.bullets)-1]
+				state.bullets = state.bullets[:len(state.bullets)-1]
+
+				// Update Enemies
+				state.enemies[i] = state.enemies[len(state.enemies)-1]
+				state.enemies = state.enemies[:len(state.enemies)-1]
+			}
 		}
 	}
 }

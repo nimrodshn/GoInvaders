@@ -21,7 +21,7 @@ func NewBullete(spaceshipLoaction pixel.Vec) (*Bullete, error) {
 	}
 
 	mat := pixel.IM
-	mat = mat.Moved(spaceshipLoaction.Add(pixel.V(0, utils.StepSize * 5)))
+	mat = mat.Moved(spaceshipLoaction.Add(pixel.V(0, utils.StepSize*5)))
 
 	bullete := new(Bullete)
 	bullete.mat = mat
@@ -38,8 +38,8 @@ func (b *Bullete) GetObjectMatrix() pixel.Matrix {
 
 // GetObjectSprite Return the object matrix containing information needed
 // in order to render spaceship.
-func (b *Bullete) GetObjectSprite() pixel.Sprite {
-	return *b.sprite
+func (b *Bullete) GetObjectSprite() *pixel.Sprite {
+	return b.sprite
 }
 
 // SetMatrix allows to set bullete matrix.

@@ -13,7 +13,7 @@ type Spaceship struct {
 	mat    pixel.Matrix
 }
 
-// NewMainPlayer Creates a new main player for the game and draws it on a given window.
+// NewMainPlayer Creates a new main player.
 func NewMainPlayer() (*Spaceship, error) {
 	// Initial player location
 	initLocation := pixel.V(float64(utils.WindowWidth/2), float64(utils.WindowHeight/10))
@@ -27,6 +27,24 @@ func NewMainPlayer() (*Spaceship, error) {
 
 	mat := pixel.IM
 	mat = mat.Moved(initLocation)
+
+	player := new(Spaceship)
+	player.mat = mat
+	player.sprite = sprite
+
+	return player, nil
+}
+
+// NewEnemy Creates a new enemy for the game.
+func NewEnemy() (*Spaceship, error) {
+	// Load main player sprite.
+	sprite, err := utils.LoadSprite("./assets/images/invader.png")
+
+	if err != nil {
+		return nil, err
+	}
+
+	mat := pixel.IM
 
 	player := new(Spaceship)
 	player.mat = mat
@@ -49,12 +67,12 @@ func (player *Spaceship) SetMatrix(matrix pixel.Matrix) {
 
 // GetObjectMatrix Return the object matrix containing information needed
 // in order to render spaceship.
-func (player Spaceship) GetObjectMatrix() pixel.Matrix {
+func (player *Spaceship) GetObjectMatrix() pixel.Matrix {
 	return player.mat
 }
 
 // GetObjectSprite Return the object matrix containing information needed
 // in order to render spaceship.
-func (player Spaceship) GetObjectSprite() pixel.Sprite {
-	return *player.sprite
+func (player *Spaceship) GetObjectSprite() *pixel.Sprite {
+	return player.sprite
 }
