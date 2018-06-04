@@ -32,8 +32,12 @@ const (
 	PlayerShotBullet = 5
 	// Interval from last shot, this is to prevent shoting storms.
 	shotInterval = time.Duration(200 * time.Millisecond)
+	// Time untill next deployment of enemies
+	levelInterval = time.Duration(30 * time.Second)
 	// the amount of initial game enemies
 	enemyCount = 5
+	// time between two levels
+	timeForNextLevel = 1 * time.Minute
 )
 
 // NewGameState Creates  a new GameState for game initialization
@@ -42,7 +46,6 @@ func NewGameState() (state *GameState, err error) {
 	player, err := spaceship.NewMainPlayer()
 	state.mainPlayer = player
 	state.lastTimeShot = time.Now()
-	state.timeForNextLevel = 1 * time.Minute
 	state.level = 1
 	state.enemies = initializeEnemiesForLevel(state.level)
 	return state, err
@@ -65,7 +68,7 @@ func (state *GameState) GetGameObjects() []gameobject.GameObject {
 // ChangeState changes the game state according to the input given by ui.
 func (state *GameState) ChangeState(indicator int) {
 	state.processInput(indicator)
-	state.updateBulletesLocation()
+	state.updateBulletesAndEnemiesLocation()
 	state.ComputeLogic()
 }
 
@@ -94,17 +97,27 @@ func (state *GameState) processInput(indicator int) {
 	}
 }
 
-func (state *GameState) updateBulletesLocation() {
-	for i, b := range state.bullets {
+func (state *GameState) updateBulletesAndEnemiesLocation() {
+	updatedBullets := make([]*bullete.Bullete, 0)
+	updatedEnemies := make([]*spaceship.Spaceship, 0)
+	for _, b := range state.bullets {
 		bulleteMat := b.GetObjectMatrix()
 		newLocation := bulleteMat.Moved(pixel.V(0, utils.StepSize))
 		if inBounds(newLocation) {
 			b.SetMatrix(newLocation)
-		} else {
-			state.bullets[i] = state.bullets[len(state.bullets)-1]
-			state.bullets = state.bullets[:len(state.bullets)-1]
+			updatedBullets = append(updatedBullets, b)
 		}
 	}
+	state.bullets = updatedBullets
+	for _, e := range state.enemies {
+		enemyeMat := e.GetObjectMatrix()
+		newLocation := enemyeMat.Moved(pixel.V(0, -utils.StepSize/5))
+		if inBounds(newLocation) {
+			e.SetMatrix(newLocation)
+			updatedEnemies = append(updatedEnemies, e)
+		}
+	}
+	state.enemies = updatedEnemies
 }
 
 func inBounds(mat pixel.Matrix) bool {
@@ -165,6 +178,7 @@ func (state *GameState) ComputeLogic() {
 			eMat := e.GetObjectMatrix()
 			eX := eMat[4]
 			eY := eMat[5]
+
 			bMat := b.GetObjectMatrix()
 			bX := bMat[4]
 			bY := bMat[5]
