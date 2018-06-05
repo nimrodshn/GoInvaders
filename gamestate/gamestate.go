@@ -9,10 +9,10 @@ import (
 
 // GameState holds the current game state
 type GameState struct {
-	gameObjects      map[int][]*gameobject.GameObject
-	lastTimeShot     time.Time
-	timeForNextLevel time.Duration
-	level            int
+	gameObjects          map[int][]*gameobject.GameObject
+	lastTimeShot         time.Time
+	timeBeginningOfLevel time.Time
+	level                int
 }
 
 const (
@@ -29,17 +29,16 @@ const (
 	// Interval from last shot, this is to prevent shoting storms.
 	shotInterval = time.Duration(200 * time.Millisecond)
 	// Time untill next deployment of enemies
-	levelInterval = time.Duration(30 * time.Second)
+	levelInterval = time.Duration(10 * time.Second)
 	// the amount of initial game enemies
 	enemyCount = 5
-	// time between two levels
-	timeForNextLevel = 1 * time.Minute
 )
 
 // NewGameState Creates  a new GameState for game initialization
 func NewGameState() (state *GameState, err error) {
 	state = new(GameState)
 	state.lastTimeShot = time.Now()
+	state.timeBeginningOfLevel = time.Now()
 	state.level = 1
 	objects := make(map[int][]*gameobject.GameObject)
 
@@ -61,6 +60,11 @@ func (state *GameState) ChangeState(indicator int) {
 	state.processInput(indicator)
 	state.gameObjects[gameobject.BulletObject] = updateObjectsLocation(state.gameObjects[gameobject.BulletObject], utils.StepSize)
 	state.gameObjects[gameobject.EnemyObject] = updateObjectsLocation(state.gameObjects[gameobject.EnemyObject], -utils.StepSize/5)
+	if time.Since(state.timeBeginningOfLevel) >= levelInterval {
+		enemies := initializeEnemiesForLevel(1)
+		state.gameObjects[gameobject.EnemyObject] = append(state.gameObjects[gameobject.EnemyObject], enemies...)
+		state.timeBeginningOfLevel = time.Now()
+	}
 }
 
 func (state *GameState) processInput(indicator int) {
@@ -119,7 +123,7 @@ func initializeEnemiesForLevel(level int) []*gameobject.GameObject {
 	for i := 0; i < 2*total; i++ {
 		if i%2 != 0 {
 			x := float64(i) / float64(2*total)
-			location := pixel.V(x*utils.WindowWidth, utils.WindowHeight*0.8)
+			location := pixel.V(x*utils.WindowWidth, utils.WindowHeight)
 			e := gameobject.NewGameObject(location, gameobject.EnemyObject)
 			enemyArr[idx] = e
 			idx++
