@@ -3,8 +3,10 @@ package userinterface
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/nimrodshn/GoInvaders/gameobject"
+	"github.com/nimrodshn/GoInvaders/bullete"
 	"github.com/nimrodshn/GoInvaders/gamestate"
+	"github.com/nimrodshn/GoInvaders/logic"
+	"github.com/nimrodshn/GoInvaders/spaceship"
 	"github.com/nimrodshn/GoInvaders/utils"
 	"golang.org/x/image/colornames"
 )
@@ -13,8 +15,11 @@ import (
 // and displays output accordingly.
 // UserInterface also updates the game state according to the input.
 type UserInterface struct {
-	state  *gamestate.GameState
-	window *pixelgl.Window
+	state            *gamestate.GameState
+	window           *pixelgl.Window
+	enemySprite      *spaceship.Spaceship
+	bulletSprite     *bullete.Bullete
+	mainPlayerSprite *spaceship.Spaceship
 }
 
 // NewUserInterface creates a user interface object
@@ -25,33 +30,50 @@ func NewUserInterface() (UserInterface, error) {
 		VSync:  true,
 	}
 
-	win, err := pixelgl.NewWindow(cfg)
-	state, err := gamestate.NewGameState()
+	win, _ := pixelgl.NewWindow(cfg)
+	state, _ := gamestate.NewGameState()
+	player, _ := spaceship.NewMainPlayer()
+	enemy, _ := spaceship.NewEnemy()
+	bullet, _ := bullete.NewBullete()
 
-	if err != nil {
-		panic(err)
-	}
 	ui := UserInterface{
-		window: win,
-		state:  state,
+		window:           win,
+		state:            state,
+		mainPlayerSprite: player,
+		enemySprite:      enemy,
+		bulletSprite:     bullet,
 	}
-	return ui, err
+	return ui, nil
 }
 
 // DrawGameOnScreen draws the game on screen
 func (ui *UserInterface) DrawGameOnScreen() {
 	ui.window.Clear(colornames.Black)
-	gameObjects := ui.state.GetGameObjects()
-	for _, obj := range gameObjects {
-		drawObjectOnScreen(obj, ui.window)
-	}
-	ui.window.Update()
-}
+	mainPlayer := ui.state.GetMainPlayer()
+	enemies := ui.state.GetEnemies()
+	bulletes := ui.state.GetBullets()
 
-func drawObjectOnScreen(object gameobject.GameObject, window *pixelgl.Window) {
-	sprite := object.GetObjectSprite()
-	mat := object.GetObjectMatrix()
-	sprite.Draw(window, mat)
+	bulletBatch := pixel.NewBatch(&pixel.TrianglesData{}, ui.bulletSprite.GetObjectSprite().Picture())
+	mainPlayerBatch := pixel.NewBatch(&pixel.TrianglesData{}, ui.mainPlayerSprite.GetObjectSprite().Picture())
+	enemiesBatch := pixel.NewBatch(&pixel.TrianglesData{}, ui.enemySprite.GetObjectSprite().Picture())
+
+	bulletBatch.Clear()
+	for _, b := range bulletes {
+		ui.bulletSprite.GetObjectSprite().Draw(bulletBatch, b.GetObjectMatrix())
+	}
+	bulletBatch.Draw(ui.window)
+
+	mainPlayerBatch.Clear()
+	ui.mainPlayerSprite.GetObjectSprite().Draw(mainPlayerBatch, mainPlayer.GetObjectMatrix())
+	mainPlayerBatch.Draw(ui.window)
+
+	enemiesBatch.Clear()
+	for _, e := range enemies {
+		ui.enemySprite.GetObjectSprite().Draw(enemiesBatch, e.GetObjectMatrix())
+	}
+	enemiesBatch.Draw(ui.window)
+
+	ui.window.Update()
 }
 
 // ListenOnKeyStroke Moves player on key strokes
@@ -70,6 +92,7 @@ func (ui UserInterface) ListenOnKeyStroke() {
 		userInput = gamestate.PlayerShotBullet
 	}
 	ui.state.ChangeState(userInput)
+	logic.ComputeLogic(ui.state, ui.enemySprite.GetObjectSprite())
 }
 
 // WindowClosed Check if window is closed
