@@ -120,9 +120,9 @@ func initializeEnemiesForLevel(level int) []*gameobject.GameObject {
 	total := level * enemyCount
 	idx := 0
 	enemyArr := make([]*gameobject.GameObject, total)
-	for i := 0; i < 2*total; i++ {
+	for i := 0; i < 2*enemyCount; i++ {
 		if i%2 != 0 {
-			x := float64(i) / float64(2*total)
+			x := float64(i) / float64(2*enemyCount)
 			location := pixel.V(x*utils.WindowWidth, utils.WindowHeight)
 			e := gameobject.NewGameObject(location, gameobject.EnemyObject)
 			enemyArr[idx] = e
