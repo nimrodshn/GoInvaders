@@ -9,4 +9,4 @@ A small "space invaders" inspired game written in Golang.
 1. [Pixel](https://github.com/faiface/pixel)
 
 ## Game Play:
-[Example Game Play](/assets/images/gameplay.gif)
+![Example Game Play](/assets/images/gameplay.gif)
