@@ -13,6 +13,7 @@ type GameState struct {
 	lastTimeShot         time.Time
 	timeBeginningOfLevel time.Time
 	level                int
+	mainPlayerLives      int
 }
 
 const (
@@ -46,11 +47,11 @@ func NewGameState() (state *GameState, err error) {
 	mainPlayerLoctaion := pixel.V(float64(utils.WindowWidth/2), float64(utils.WindowHeight/10))
 	player := gameobject.NewGameObject(mainPlayerLoctaion, gameobject.MainPlayerObject)
 	objects[gameobject.MainPlayerObject] = []*gameobject.GameObject{player}
-	// Initialize a new enemy player.
+	// Initialize a new enemies.
 	enemies := initializeEnemiesForLevel(state.level)
 	objects[gameobject.EnemyObject] = make([]*gameobject.GameObject, 0)
 	objects[gameobject.EnemyObject] = append(objects[gameobject.EnemyObject], enemies...)
-
+	state.mainPlayerLives = 5
 	state.gameObjects = objects
 	return state, err
 }
@@ -155,4 +156,11 @@ func (state *GameState) GetBullets() []*gameobject.GameObject {
 // SetBullets sets the current bullets.
 func (state *GameState) SetBullets(bullets []*gameobject.GameObject) {
 	state.gameObjects[gameobject.BulletObject] = bullets
+}
+
+// DecrementMainPlayerLives decrements the lives of the main player.
+func (state *GameState) DecrementMainPlayerLives() {
+	if state.mainPlayerLives > 0 {
+		state.mainPlayerLives = state.mainPlayerLives - 1
+	}
 }

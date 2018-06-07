@@ -57,16 +57,19 @@ func (ui *UserInterface) DrawGameOnScreen() {
 	mainPlayerBatch := pixel.NewBatch(&pixel.TrianglesData{}, ui.mainPlayerSprite.GetObjectSprite().Picture())
 	enemiesBatch := pixel.NewBatch(&pixel.TrianglesData{}, ui.enemySprite.GetObjectSprite().Picture())
 
+	// Draw bullets
 	bulletBatch.Clear()
 	for _, b := range bulletes {
 		ui.bulletSprite.GetObjectSprite().Draw(bulletBatch, b.GetObjectMatrix())
 	}
 	bulletBatch.Draw(ui.window)
 
+	// Draw main player
 	mainPlayerBatch.Clear()
 	ui.mainPlayerSprite.GetObjectSprite().Draw(mainPlayerBatch, mainPlayer.GetObjectMatrix())
 	mainPlayerBatch.Draw(ui.window)
 
+	// Draw enemies
 	enemiesBatch.Clear()
 	for _, e := range enemies {
 		ui.enemySprite.GetObjectSprite().Draw(enemiesBatch, e.GetObjectMatrix())
