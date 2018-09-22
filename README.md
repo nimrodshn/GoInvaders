@@ -1,7 +1,7 @@
 
-# GoInvaders
+# GoInvaders/pkg
 
-![GoInvaders](/assets/images/spaceship.png)
+![GoInvaders/pkg](/assets/images/spaceship.png)
 
 A small "space invaders" inspired game written in Golang.
 

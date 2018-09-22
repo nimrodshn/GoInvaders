@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/nimrodshn/GoInvaders/userinterface"
+	"github.com/nimrodshn/GoInvaders/pkg/userinterface"
 	"time"
 )
 

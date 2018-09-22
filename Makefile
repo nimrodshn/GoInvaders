@@ -1,0 +1,5 @@
+
+
+
+GoInvaders:
+	go build .

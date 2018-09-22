@@ -2,8 +2,8 @@ package gamestate
 
 import (
 	"github.com/faiface/pixel"
-	"github.com/nimrodshn/GoInvaders/gameobject"
-	"github.com/nimrodshn/GoInvaders/utils"
+	"github.com/nimrodshn/GoInvaders/pkg/gameobject"
+	"github.com/nimrodshn/GoInvaders/pkg/utils"
 	"time"
 )
 

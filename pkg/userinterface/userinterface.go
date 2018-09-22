@@ -3,11 +3,11 @@ package userinterface
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/nimrodshn/GoInvaders/bullete"
-	"github.com/nimrodshn/GoInvaders/gamestate"
-	"github.com/nimrodshn/GoInvaders/logic"
-	"github.com/nimrodshn/GoInvaders/spaceship"
-	"github.com/nimrodshn/GoInvaders/utils"
+	"github.com/nimrodshn/GoInvaders/pkg/bullete"
+	"github.com/nimrodshn/GoInvaders/pkg/gamestate"
+	"github.com/nimrodshn/GoInvaders/pkg/logic"
+	"github.com/nimrodshn/GoInvaders/pkg/spaceship"
+	"github.com/nimrodshn/GoInvaders/pkg/utils"
 	"golang.org/x/image/colornames"
 )
 
@@ -25,7 +25,7 @@ type UserInterface struct {
 // NewUserInterface creates a user interface object
 func NewUserInterface() (UserInterface, error) {
 	cfg := pixelgl.WindowConfig{
-		Title:  "GoInvaders",
+		Title:  "GoInvaders/pkg",
 		Bounds: pixel.R(0, 0, utils.WindowWidth, utils.WindowHeight),
 		VSync:  true,
 	}

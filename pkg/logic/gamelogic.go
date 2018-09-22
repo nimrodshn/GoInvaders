@@ -2,7 +2,7 @@ package logic
 
 import (
 	"github.com/faiface/pixel"
-	"github.com/nimrodshn/GoInvaders/gamestate"
+	"github.com/nimrodshn/GoInvaders/pkg/gamestate"
 )
 
 // ComputeLogic computes the game logic as a lambda and changes the state in place.

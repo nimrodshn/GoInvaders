@@ -2,7 +2,7 @@ package bullete
 
 import (
 	"github.com/faiface/pixel"
-	"github.com/nimrodshn/GoInvaders/utils"
+	"github.com/nimrodshn/GoInvaders/pkg/utils"
 )
 
 // Bullete The class wrapping the logic of shots either from enemy or main player.

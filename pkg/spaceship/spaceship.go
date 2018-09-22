@@ -2,7 +2,7 @@ package spaceship
 
 import (
 	"github.com/faiface/pixel"
-	"github.com/nimrodshn/GoInvaders/utils"
+	"github.com/nimrodshn/GoInvaders/pkg/utils"
 )
 
 // Spaceship struct is a common struct for both player and enemy
