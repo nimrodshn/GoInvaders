@@ -1,12 +1,15 @@
 
-# GoInvaders/pkg
+# GoInvaders
 
 ![GoInvaders/pkg](/assets/images/spaceship.png)
 
 A small "space invaders" inspired game written in Golang.
 
-## Dependencies:
-1. [Pixel](https://github.com/faiface/pixel)
+## How to run GoInvaders?
+Simple! Just compile by running `make` and run the executable:
+```
+./GoInvaders
+```
 
 ## Game Play:
 ![Example Game Play](/assets/images/gameplay.gif)
